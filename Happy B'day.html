@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Ucapan Ulang Tahun</title>
+<style>
+  :root{
+    --bg-a:#16334f;
+    --bg-b:#15324f;
+    --accent1:#ffbf3b;
+    --accent2:#ff9f00;
+    --card-edge: rgba(255,255,255,0.04);
+  }
+
+  html,body{height:100%;margin:0}
+  body{
+    font-family:"Poppins",system-ui,-apple-system,"Segoe UI",Roboto,Arial;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+    background:
+      radial-gradient(900px 400px at 8% 8%, rgba(255,255,255,0.02), transparent 12%),
+      linear-gradient(180deg,var(--bg-a) 0%, var(--bg-b) 100%);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#fff;
+    overflow:hidden;
+    padding:24px;
+  }
+
+  .slides{
+    position:relative;
+    width:820px;
+    max-width:92%;
+    height:540px;
+  }
+
+  .card{
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    width:100%;
+    height:100%;
+    background:linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0.01));
+    border-radius:24px;
+    padding:36px 48px;
+    box-shadow:0 40px 80px rgba(0,0,0,0.45);
+    border:1px solid var(--card-edge);
+    text-align:center;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .36s ease,transform .36s cubic-bezier(.2,.9,.3,1);
+    overflow:visible;
+  }
+  .card.active{
+    opacity:1;
+    pointer-events:auto;
+  }
+
+  h1,h2{
+    margin:8px 0 18px 0;
+    font-weight:800;
+    text-shadow:0 8px 22px rgba(6,17,28,0.6);
+  }
+  h1{font-size:44px;}
+  h2{font-size:22px;}
+
+  .subtitle{
+    font-size:18px;
+    color:rgba(255,255,255,0.92);
+    margin-bottom:12px;
+  }
+  .emoji-small{font-size:22px;margin:10px 0 6px 0;}
+
+  .cta{margin-top:18px;}
+
+  .btn{
+    display:inline-block;
+    padding:14px 34px;
+    border-radius:999px;
+    background:linear-gradient(180deg,var(--accent1),var(--accent2));
+    color:#1a1200;
+    font-weight:800;
+    border:none;
+    cursor:pointer;
+    box-shadow:0 16px 36px rgba(7,13,26,0.6),0 6px 18px rgba(0,0,0,0.4);
+    font-size:18px;
+  }
+  .btn.secondary{
+    background:linear-gradient(180deg,#6b5bff,#5b3bff);
+    color:#fff;
+  }
+  .btn:active{transform:translateY(2px) scale(.995);}
+
+  .glow{
+    position:absolute;
+    left:7%;
+    bottom:-26px;
+    width:86%;
+    height:80px;
+    border-radius:20px;
+    filter:blur(28px);
+    background:rgba(7,16,28,0.35);
+    z-index:-1;
+  }
+
+  /* BOARD GAME (slide 3) */
+  .board{
+    width:100%;
+    max-width:560px;
+    margin:8px auto 0 auto;
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:16px;
+    justify-items:center;
+    align-items:center;
+    padding-top:6px;
+  }
+  .card-item{
+    width:100%;
+    aspect-ratio:1/1;
+    max-width:110px;
+    border-radius:18px;
+    background:linear-gradient(135deg,#33ddff,#66ffcc);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:34px;
+    color:rgba(255,255,255,0.95);
+    cursor:pointer;
+    user-select:none;
+    box-shadow:0 12px 30px rgba(6,17,28,0.55);
+    transition:transform .16s ease,box-shadow .16s ease;
+  }
+  .card-item:active{transform:translateY(3px) scale(.99);}
+  .card-item.flipped{
+    background:#ffffff;
+    color:#222;
+    box-shadow:0 8px 18px rgba(6,17,28,0.45);
+  }
+  .card-item.matched{
+    opacity:0.18;
+    pointer-events:none;
+  }
+  .note{
+    margin-top:14px;
+    color:rgba(255,255,255,0.9);
+    font-size:16px;
+  }
+  .after-game{margin-top:14px;}
+
+  /* Slide 5–7 – style gelap ala "kado" */
+  .card-option{
+    background:radial-gradient(circle at top,#111827,#020617);
+    border-color:rgba(148,163,184,0.4);
+    box-shadow:0 40px 90px rgba(0,0,0,0.7);
+  }
+  .avatar-large{
+    width:120px;
+    height:120px;
+    border-radius:50%;
+    margin:4px auto 16px auto;
+    background:radial-gradient(circle at 30% 25%,#ffffff,#e5e7ff);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    box-shadow:0 16px 40px rgba(0,0,0,0.65);
+    border:4px solid rgba(255,255,255,0.08);
+    font-size:54px;
+  }
+  .option-text{
+    font-size:22px;
+    font-weight:700;
+    margin-bottom:4px;
+  }
+  .option-sub{
+    font-size:20px;
+    margin-bottom:18px;
+  }
+  .option-buttons{
+    display:flex;
+    justify-content:center;
+    gap:14px;
+    margin-top:4px;
+  }
+  .opt-btn{
+    min-width:110px;
+    padding:11px 20px;
+    border-radius:12px;
+    border:none;
+    cursor:pointer;
+    font-weight:700;
+    font-size:16px;
+    color:#fff;
+    background:linear-gradient(180deg,#4f46e5,#3b82f6);
+    box-shadow:0 12px 30px rgba(15,23,42,0.8);
+  }
+  .opt-btn:active{transform:translateY(2px) scale(.97);}
+
+  /* FINAL SLIDE */
+  .final-avatar{
+    width:120px;
+    height:120px;
+    border-radius:50%;
+    background:#ffffff;
+    margin:4px auto 18px auto;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:54px;
+    box-shadow:0 14px 32px rgba(0,0,0,0.45);
+  }
+  .final-title{
+    font-size:24px;
+    font-weight:800;
+    letter-spacing:0.03em;
+    margin-bottom:14px;
+  }
+  .final-textwrap{
+    max-width:640px;
+    margin:0 auto;
+    font-size:17px;
+    line-height:1.6;
+  }
+  .final-textwrap p{
+    margin:6px 0;
+  }
+  .final-bottom{
+    margin-top:14px;
+    font-weight:700;
+  }
+
+  .conf-piece{
+    position:fixed;
+    top:-10px;
+    pointer-events:none;
+    font-size:18px;
+    transition:transform 1.4s linear,opacity 1.4s linear;
+    z-index:120;
+  }
+
+  @media(max-width:880px){
+    .slides{height:620px;}
+    h1{font-size:36px;}
+    .card{padding:24px;border-radius:18px;}
+    .card-item{max-width:86px;font-size:28px;border-radius:14px;}
+  }
+  @media(max-width:420px){
+    .slides{width:92%;height:680px;}
+    h1{font-size:30px;}
+    .card-item{max-width:68px;font-size:22px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="slides" aria-live="polite">
+
+  <!-- SLIDE 1 -->
+  <section id="slide1" class="card card-small active" role="region" aria-label="Slide 1">
+    <h1>Alooo Kamuuu! ✨</h1>
+    <p class="subtitle">Coba buka ini bentar yaa, ada sesuatu yang spesial buat kamu. 😉</p>
+    <div class="emoji-small" aria-hidden="true">😊</div>
+    <div class="cta"><button id="btnStart" class="btn">Start</button></div>
+    <div class="glow" aria-hidden="true"></div>
+  </section>
+
+  <!-- SLIDE 2 -->
+  <section id="slide2" class="card card-small" role="region" aria-label="Slide 2">
+    <h2>Aku cuma mau bilang</h2>
+    <p class="subtitle" id="s2sub"></p>
+    <div class="cta"><button id="btnToGame" class="btn">Next</button></div>
+    <div class="glow" aria-hidden="true"></div>
+  </section>
+
+  <!-- SLIDE 3 – GAME KARTU HEWAN -->
+  <section id="slide3" class="card" role="region" aria-label="Slide 3">
+    <h2 style="margin-top:6px">Tapi main games dulu yaa. Cocokkin kartu-kartu ini dulu yaa. 😆</h2>
+
+    <div id="gameBoard" class="board"></div>
+
+    <p class="note">Pasangkan semua kartunya~</p>
+
+    <div class="after-game">
+      <button id="btnAfterGame" class="btn secondary" style="display:none">Next</button>
+    </div>
+
+    <div class="glow" aria-hidden="true"></div>
+  </section>
+
+  <!-- SLIDE 4 -->
+  <section id="slide4" class="card" role="region" aria-label="Slide 4">
+    <h2 style="margin-top:6px">Ciee yang lagi ultah hari ini 🎉✨</h2>
+    <div style="max-width:760px;margin:6px auto 18px auto;color:rgba(255,255,255,0.9);font-size:17px">
+      <!-- EDIT TEKS SLIDE 4 DI SINI -->
+    </div>
+    <div class="cta"><button id="btnToSlide5" class="btn">Next</button></div>
+    <div class="glow" aria-hidden="true"></div>
+  </section>
+
+  <!-- SLIDE 5 – PILIH KADO -->
+  <section id="slide5" class="card card-option" role="region" aria-label="Slide 5">
+    <div class="avatar-large">
+      <!-- Bisa ganti pakai <img src="..."> -->
+      🐮
+    </div>
+
+    <div class="option-text">Kamu mau kado gak nih?</div>
+    <div class="option-sub">🤭 ✨</div>
+
+    <div class="option-buttons">
+      <button id="btnMau"   class="opt-btn">Mau</button>
+      <button id="btnGamau" class="opt-btn">Gamau</button>
+    </div>
+
+    <div class="glow" aria-hidden="true"></div>
+  </section>
+
+  <!-- SLIDE 6 – JAWABAN "MAU" -->
+  <section id="slide6" class="card card-option" role="region" aria-label="Slide 6">
+    <div class="avatar-large">
+      🥳
+    </div>
+
+    <div class="option-text">
+      <!-- EDIT TEKS JAWABAN MAU DI SINI -->
+      Tapi bo'ong! 🤣
+    </div>
+    <div class="option-sub" style="font-size:18px;">
+      Gajadi ngasih kado ah, soalnya kamu bau 😜😂
+    </div>
+
+    <div class="cta">
+      <button id="btnYesNext" class="btn">Next</button>
+    </div>
+
+    <div class="glow" aria-hidden="true"></div>
+  </section>
+
+  <!-- SLIDE 7 – JAWABAN "GAMAU" -->
+  <section id="slide7" class="card card-option" role="region" aria-label="Slide 7">
+    <div class="avatar-large">
+      😏
+    </div>
+
+    <div class="option-text">
+      Yakin banget gak mau kado? 😏
+    </div>
+    <div class="option-sub" style="font-size:18px;">
+      Tapi yaudah deh kalo gamau 😉
+    </div>
+
+    <div class="cta">
+      <button id="btnNoNext" class="btn">Next</button>
+    </div>
+
+    <div class="glow" aria-hidden="true"></div>
+  </section>
+
+  <!-- SLIDE 8 – FINAL BIRTHDAY MESSAGE -->
+  <section id="slide8" class="card" role="region" aria-label="Slide 8">
+    <div class="final-avatar">
+      🐼
+    </div>
+
+    <div class="final-title">Anyway, HAPPY BIRTHDAYYY YAA!!! 🎂🎉😎</div>
+
+    <div class="final-textwrap">
+      <p>
+        Semoga di usia baru ini, kamu selalu dikelilingi kebahagiaan, kesehatan,
+        dan orang-orang baik yang tulus sayang sama kamu.
+      </p>
+      <p>
+        Semoga di usia baru ini, kamu selalu dikelilingi kebahagiaan, kesehatan,
+        dan semoga segala doa serta cita-cita kamu bisa terwujud. ✨
+      </p>
+      <p>
+        Dan semoga hari ini jadi awal baru yang penuh keberkahan, tawa, cerita seru,
+        dan hal-hal kecil yang diam-diam bikin kamu merasa cukup. 🌻
+      </p>
+      <p class="final-bottom">
+        Wish you all the best! 🎉
+      </p>
+    </div>
+
+    <div class="glow" aria-hidden="true"></div>
+  </section>
+
+</div>
+
+<script>
+  function showSlide(n){
+    for(let i=1;i<=8;i++){
+      const el=document.getElementById("slide"+i);
+      if(!el) continue;
+      el.classList.toggle("active", i===n);
+    }
+  }
+
+  function spawnConfetti(n=16){
+    const em=["🎉","🎈","✨","🥳","🎂","🎊"];
+    for(let i=0;i<n;i++){
+      const d=document.createElement("div");
+      d.className="conf-piece";
+      d.textContent=em[Math.floor(Math.random()*em.length)];
+      d.style.left=(6+Math.random()*88)+"vw";
+      d.style.fontSize=(12+Math.random()*20)+"px";
+      document.body.appendChild(d);
+      requestAnimationFrame(()=>{
+        d.style.transform="translateY(110vh) rotate("+(Math.random()*360)+"deg)";
+        d.style.opacity="0";
+      });
+      setTimeout(()=>d.remove(),1500);
+    }
+  }
+
+  // Slide transitions
+  document.getElementById("btnStart").addEventListener("click",()=>{
+    spawnConfetti(16);
+    showSlide(2);
+  });
+
+  document.getElementById("btnToGame").addEventListener("click",()=>{
+    spawnConfetti(10);
+    showSlide(3);
+    setTimeout(initGame,220);
+  });
+
+  const btnAfter=document.getElementById("btnAfterGame");
+  btnAfter.addEventListener("click",()=>{
+    showSlide(4);
+    spawnConfetti(18);
+  });
+
+  document.getElementById("btnToSlide5").addEventListener("click",()=>{
+    spawnConfetti(12);
+    showSlide(5);
+  });
+
+  document.getElementById("btnMau").addEventListener("click",()=>{
+    spawnConfetti(18);
+    showSlide(6);
+  });
+  document.getElementById("btnGamau").addEventListener("click",()=>{
+    spawnConfetti(10);
+    showSlide(7);
+  });
+
+  // dari slide 6/7 ke slide 8 (final)
+  document.getElementById("btnYesNext").addEventListener("click",()=>{
+    spawnConfetti(20);
+    showSlide(8);
+  });
+  document.getElementById("btnNoNext").addEventListener("click",()=>{
+    spawnConfetti(20);
+    showSlide(8);
+  });
+
+  /* ====== MEMORY GAME (slide 3, hewan lucu) ====== */
+  const animals=["🐶","🐱","🐼","🐻","🐰","🦊"]; // 6 pasang
+  let deck=[],firstCard=null,lockBoard=false,matchedCount=0;
+  const board=document.getElementById("gameBoard");
+
+  function shuffle(arr){
+    for(let i=arr.length-1;i>0;i--){
+      const j=Math.floor(Math.random()*(i+1));
+      [arr[i],arr[j]]=[arr[j],arr[i]];
+    }
+    return arr;
+  }
+
+  function initGame(){
+    deck=shuffle([...animals,...animals]);
+    board.innerHTML="";
+    firstCard=null;lockBoard=false;matchedCount=0;
+    btnAfter.style.display="none";
+
+    deck.forEach((val,idx)=>{
+      const el=document.createElement("div");
+      el.className="card-item";
+      el.dataset.value=val;
+      el.dataset.index=idx;
+      el.textContent="?";
+      el.addEventListener("click",()=>onCardClick(el));
+      board.appendChild(el);
+    });
+  }
+
+  function onCardClick(el){
+    if(lockBoard) return;
+    if(el.classList.contains("flipped")||el.classList.contains("matched")) return;
+
+    el.classList.add("flipped");
+    el.textContent=el.dataset.value;
+
+    if(!firstCard){ firstCard=el; return; }
+
+    if(firstCard.dataset.value===el.dataset.value){
+      firstCard.classList.add("matched");
+      el.classList.add("matched");
+      matchedCount+=2;
+      firstCard=null;
+      spawnConfetti(6);
+
+      if(matchedCount===deck.length){
+        setTimeout(()=>{
+          btnAfter.style.display="inline-block";
+          spawnConfetti(24);
+        },420);
+      }
+    } else {
+      lockBoard=true;
+      setTimeout(()=>{
+        firstCard.classList.remove("flipped");
+        firstCard.textContent="?";
+        el.classList.remove("flipped");
+        el.textContent="?";
+        firstCard=null;
+        lockBoard=false;
+      },700);
+    }
+  }
+
+  // optional subtitle text slide 2
+  document.getElementById("s2sub").textContent = "";
+
+  // keyboard: Enter/Space trigger button
+  document.addEventListener("keydown",e=>{
+    if((e.key==="Enter"||e.key===" ") && document.activeElement &&
+       (document.activeElement.classList.contains("btn") ||
+        document.activeElement.classList.contains("opt-btn"))){
+      e.preventDefault();
+      document.activeElement.click();
+    }
+  });
+</script>
+</body>
+</html>
